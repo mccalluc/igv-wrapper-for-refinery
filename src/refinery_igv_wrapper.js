@@ -19,7 +19,7 @@ define(['refinery', 'jquery', 'jquery_ui', 'igv'],
           $head.append('<link href="' + css_url + '" rel="stylesheet" type="text/css">');
         });
 
-        var target = $('#target');
+        var $target = $('#target');
 
         var options = {
           palette: ["#00A0B0", "#6A4A3C", "#CC333F", "#EB6841"],
@@ -48,7 +48,7 @@ define(['refinery', 'jquery', 'jquery_ui', 'igv'],
           ]
         };
 
-        var browser = igv.createBrowser(target[0], options);
+        var browser = igv.createBrowser($target[0], options);
       };
     }
 );

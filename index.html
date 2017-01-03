@@ -7,6 +7,10 @@
 <p>
     <a href="https://github.com/mccalluc/igv-wrapper-for-refinery">Source on Github</a>
 </p>
+<p>
+    Output depends on URL query: Try
+    <a href="?vis=refinery_igv_wrapper&genome=hg19&uuid[]=mock-uuid-1&&uuid[]=mock-uuid-2">this example</a>.
+</p>
 <div id="target"></div>
 <!-- TODO: In production, refer to local copies of libraries instead of relying on CDNJS. -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.2/require.min.js"></script>
@@ -20,8 +24,10 @@
     require(['refinery'], function (refinery) {
         var query = refinery.parse_query(window.location.search);
         var vis = query.vis;
-        if (!vis.match(/^\w+$/)) {
-            alert('"vis" parameter contains weird characters')
+        if (!vis) {
+            alert('"vis" parameter is missing');
+        } else if (!vis.match(/^\w+$/)) {
+            alert('"vis" parameter contains weird characters');
         } else {
             require([vis], function (vis) {
                 vis();
