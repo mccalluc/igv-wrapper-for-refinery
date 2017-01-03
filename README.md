@@ -1,2 +1,5 @@
 # igv-wrapper-for-refinery
-Wrap IGV as an AMD which accepts Node IDs
+
+IGV for Refinery
+
+[demo](https://mccalluc.github.io/igv-wrapper-for-refinery)
