@@ -8,9 +8,13 @@
     <a href="https://github.com/mccalluc/igv-wrapper-for-refinery">Source on Github</a>
 </p>
 <p>
-    Output depends on URL query: Try
-    <a href="?vis=refinery_igv_wrapper&genome=hg19&uuid[]=mock-uuid-1&&uuid[]=mock-uuid-2">this example</a>.
+    Output depends on URL query. Here are some examples:
 </p>
+<ul>
+    <li><a href="?vis=refinery_igv_wrapper&genome=hg19&uuids[]=mock-uuid-1&&uuids[]=mock-uuid-2">Complete</a></li>
+    <li><a href="?vis=refinery_igv_wrapper&uuids[]=mock-uuid-1&&uuids[]=mock-uuid-2">Missing genome</a></li>
+    <li><a href="?vis=refinery_igv_wrapper&genome=hg19">Missing UUIDs</a></li>
+</ul>
 <div id="target"></div>
 <!-- TODO: In production, refer to local copies of libraries instead of relying on CDNJS. -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.2/require.min.js"></script>
@@ -26,12 +30,11 @@
         var vis = query.vis;
         if (!vis) {
             alert('"vis" parameter is missing');
-        } else if (!vis.match(/^\w+$/)) {
+        } else if (vis.match(/\W+/)) {
             alert('"vis" parameter contains weird characters');
         } else {
             require([vis], function (vis) {
-                vis();
-                // Pass no arguments: any URL parsing is done on the inside.
+                vis(query);
             });
         }
     });

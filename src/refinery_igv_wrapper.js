@@ -7,7 +7,11 @@ requirejs.config({
 });
 define(['refinery', 'jquery', 'jquery_ui', 'igv'],
     function (refinery, $) {
-      return function () {
+      return function (query) {
+        if (!query.genome) {
+          query.genome = prompt('Provide a genome build code, like "hg19"', 'hg19');
+        }
+
         var $head = $('head');
         [
           'https://fonts.googleapis.com/css?family=PT+Sans:400,700',
@@ -19,36 +23,59 @@ define(['refinery', 'jquery', 'jquery_ui', 'igv'],
           $head.append('<link href="' + css_url + '" rel="stylesheet" type="text/css">');
         });
 
-        var $target = $('#target');
+        if (!query.uuids) {
+          alert("'uuids' parameter is missing");
+          throw new Error("'uuids' parameter is missing");
+        }
+        var promises = query.uuids.map(function (uuid) {
+          return refinery.node(uuid);
+        });
 
-        var options = {
-          palette: ["#00A0B0", "#6A4A3C", "#CC333F", "#EB6841"],
-          locus: "7:55,085,725-55,276,031",
-
-          reference: {
-            id: "hg19",
-            fastaURL: "//igv.broadinstitute.org/genomes/seq/1kg_v37/human_g1k_v37_decoy.fasta",
-            cytobandURL: "//igv.broadinstitute.org/genomes/seq/b37/b37_cytoband.txt"
-          },
-
-          trackDefaults: {
-            bam: {
-              coverageThreshold: 0.2,
-              coverageQualityWeight: true
+        Promise.all(promises).then(function (promises) {
+          var tracks = promises.map(function (promise) {
+            var igv_track = {
+              name: promise.relative_file_store_item_url.replace(/.*\//, ''),
+              url: promise.relative_file_store_item_url,
+              format: promise.file_extension
+            };
+            if (promise.file_extension === "bam") {
+              igv_track.indexURL = promise.auxiliary_nodes[0];
             }
-          },
+            return igv_track;
+          });
 
-          tracks: [
-            {
-              name: "Genes",
-              url: "//igv.broadinstitute.org/annotations/hg19/genes/gencode.v18.collapsed.bed",
-              index: "//igv.broadinstitute.org/annotations/hg19/genes/gencode.v18.collapsed.bed.idx",
-              displayMode: "EXPANDED"
-            }
-          ]
-        };
+          var url_base = "https://s3.amazonaws.com/data.cloud.refinery-platform.org/data/igv-reference/" + query.genome + "/";
+          var genome_reference = {
+            "fasta_url": url_base + query.genome + ".fa",
+            "index_url": url_base + query.genome + ".fa.fai",
+            "cytoband_url": url_base + "cytoBand.txt",
+            "bed_url": url_base + "refGene.bed",
+            "tbi_url": url_base + "refGene.bed.tbi"
+          };
 
-        var browser = igv.createBrowser($target[0], options);
+          tracks.push({
+            name: "Genes",
+            type: "annotation",
+            format: "bed",
+            sourceType: "file",
+            url: genome_reference.bed_url,
+            indexURL: genome_reference.tbi_url,
+            order: Number.MAX_VALUE,
+            visibilityWindow: 300000000,
+            displayMode: "EXPANDED"
+          });
+
+          var options = {
+            reference: {
+              fastaURL: genome_reference.fasta_url,
+              indexURL: genome_reference.index_url,
+              cytobandURL: genome_reference.cytoband_url
+            },
+            tracks: tracks
+          };
+
+          igv.createBrowser($("#target")[0], options);
+        });
       };
     }
 );
