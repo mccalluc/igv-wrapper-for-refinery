@@ -1,6 +1,6 @@
 {
   "name": "igv-wrapper-for-refinery",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "IGV wrapper for Refinery",
   "main": "src/refinery_igv_wrapper.js",
   "scripts": {
