@@ -1,0 +1,22 @@
+{
+  "name": "igv-wrapper-for-refinery",
+  "version": "0.0.1",
+  "description": "IGV wrapper for Refinery",
+  "main": "src/refinery_igv_wrapper.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/refinery-platform/igv-wrapper-for-refinery.git"
+  },
+  "keywords": [
+    "refinery-vis"
+  ],
+  "author": "Chuck McCallum",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/refinery-platform/igv-wrapper-for-refinery/issues"
+  },
+  "homepage": "https://github.com/refinery-platform/igv-wrapper-for-refinery#readme"
+}
