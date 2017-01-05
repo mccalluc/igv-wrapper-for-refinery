@@ -1,10 +1,27 @@
-requirejs.config({
-  "paths": {
+(function () {
+  /*
+   In production environments, better to have dependencies checked in,
+   but in development easier to rely on defaults from free CDNs.
+   */
+  var configured = requirejs.s.contexts._.config.paths; // No public API. :(
+  var defaults = {
     "jquery": "https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min",
     "jquery_ui": "https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/jquery-ui.min",
     "igv": "https://igv.org/web/release/1.0.1/igv-1.0.1"
+  };
+  for (key in defaults) {
+    if (!configured[key]) {
+      var paths = {};
+      paths[key] = defaults[key];
+      requirejs.config({
+        paths: paths
+      });
+    }
   }
-});
+})();
+
+// TODO: In production, an alternate path is provided for refinery,
+// rather than relying on the mock that is used in development.
 define(['refinery', 'jquery', 'jquery_ui', 'igv'],
     function (refinery, $) {
       return function (query) {
@@ -14,6 +31,7 @@ define(['refinery', 'jquery', 'jquery_ui', 'igv'],
 
         var $head = $('head');
         [
+          // TODO: Store these locally?
           'https://fonts.googleapis.com/css?family=PT+Sans:400,700',
           'https://fonts.googleapis.com/css?family=Open+Sans',
           'https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/themes/smoothness/jquery-ui.css',
@@ -24,7 +42,6 @@ define(['refinery', 'jquery', 'jquery_ui', 'igv'],
         });
 
         if (!query.uuids) {
-          alert("'uuids' parameter is missing");
           throw new Error("'uuids' parameter is missing");
         }
         var promises = query.uuids.map(function (uuid) {
@@ -74,7 +91,7 @@ define(['refinery', 'jquery', 'jquery_ui', 'igv'],
             tracks: tracks
           };
 
-          igv.createBrowser($("#target")[0], options);
+          igv.createBrowser($("body")[0], options);
         });
       };
     }
