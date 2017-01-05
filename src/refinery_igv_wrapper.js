@@ -1,43 +1,34 @@
-(function () {
-  /*
-   In production environments, better to have dependencies checked in,
-   but in development easier to rely on defaults from free CDNs.
-   */
-  var configured = requirejs.s.contexts._.config.paths; // No public API. :(
-  var defaults = {
-    "jquery": "https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min",
-    "jquery_ui": "https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/jquery-ui.min",
-    "igv": "https://igv.org/web/release/1.0.1/igv-1.0.1"
-  };
-  for (key in defaults) {
-    if (!configured[key]) {
-      var paths = {};
-      paths[key] = defaults[key];
-      requirejs.config({
-        paths: paths
-      });
-    }
-  }
-})();
+requirejs.default_paths({
+  // JS:
+  "jquery": "https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min",
+  "jquery_ui": "https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/jquery-ui.min",
+  "igv": "https://igv.org/web/release/1.0.1/igv-1.0.1",
+  // CSS:
+  'pt_sans_font': 'https://fonts.googleapis.com/css?family=PT+Sans:400,700',
+  'open_sans_font': 'https://fonts.googleapis.com/css?family=Open+Sans',
+  'smoothness_css': 'https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/themes/smoothness/jquery-ui.css',
+  'font_awesome_css': 'https://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css',
+  'igv_css': 'https://igv.org/web/release/1.0.1/igv-1.0.1.css'
+});
 
-// TODO: In production, an alternate path is provided for refinery,
+// In production, an alternate path is provided for refinery,
 // rather than relying on the mock that is used in development.
 define(['refinery', 'jquery', 'jquery_ui', 'igv'],
     function (refinery, $) {
       return function (query) {
         if (!query.genome) {
-          query.genome = prompt('Provide a genome build code, like "hg19"', 'hg19');
+          query.genome = prompt('Provide a genome build, like "hg19"', 'hg19');
         }
 
         var $head = $('head');
         [
-          // TODO: Store these locally?
-          'https://fonts.googleapis.com/css?family=PT+Sans:400,700',
-          'https://fonts.googleapis.com/css?family=Open+Sans',
-          'https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/themes/smoothness/jquery-ui.css',
-          'https://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css',
-          'https://igv.org/web/release/1.0.1/igv-1.0.1.css'
-        ].forEach(function (css_url) {
+          'pt_sans_font',
+          'open_sans_font',
+          'smoothness_css',
+          'font_awesome_css',
+          'igv_css'
+        ].forEach(function (css_key) {
+          var css_url = requirejs.toUrl(css_key);
           $head.append('<link href="' + css_url + '" rel="stylesheet" type="text/css">');
         });
 
